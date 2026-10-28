@@ -18,15 +18,20 @@
 <script lang="ts" setup>
 import { loginConlaravel } from "@/services/auth.service"
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 const credenciales = ref({email: "", password: ""});
-const errors = ref<any>({})
+const errors = ref<any>({});
+
+const router = useRouter();
 
 async function login(){
     try{
         const {data} = await loginConlaravel(credenciales.value.email, credenciales.value.password);
         console.log(data);
-        alert("Bienvenido...")
+        // alert("Bienvenido...")
+        router.push("/admin/usuario");
+
 
     }catch(error: any){
         console.log("*******: ", error.response);

@@ -1,7 +1,7 @@
 import api from "./api";
 
 export async function funListar(){
-    return await api.get("/usuario", {headers: {Authorization: "Bearer 227|AoT5NFx1TvypzbU8BlK3U89166GZEP5getscBxh4ed4de33b"}});
+    return await api.get("/usuario");
 }
 
 export function funGuardar(){

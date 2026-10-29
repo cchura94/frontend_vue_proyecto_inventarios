@@ -30,6 +30,7 @@ async function login(){
         const {data} = await loginConlaravel(credenciales.value.email, credenciales.value.password);
         console.log(data);
         // alert("Bienvenido...")
+        localStorage.setItem("access_token", data.access_token)
         router.push("/admin/usuario");
 
 

@@ -12,6 +12,29 @@ const instance = axios.create({
     timeout: 30000
 });
 
-// interceptores
+// interceptores (petición del cliente: request)
+instance.interceptors.request.use((config) => {
+    const token = localStorage.getItem("access_token");
+
+    if(token){
+        config.headers.Authorization = "Bearer "+token;
+    }
+
+    return config;
+});
+
+// interceptores (respuesta del servidor: response)
+
+instance.interceptors.response.use(
+    (resp) => {
+        return resp
+    },
+    (error) => {
+        if(error.response.status === 401){
+            localStorage.removeItem("access_token");
+            location.href = "/auth/login"
+        }
+        return Promise.reject(error);
+});
 
 export default instance;

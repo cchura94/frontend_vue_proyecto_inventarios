@@ -35,6 +35,7 @@ instance.interceptors.response.use(
             location.href = "/auth/login"
         }
         return Promise.reject(error);
-});
+    }
+);
 
 export default instance;

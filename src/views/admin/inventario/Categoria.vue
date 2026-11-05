@@ -11,23 +11,28 @@
 
         <input type="submit" value="guardar Categoria">        
     </form>
-    <table border="1">
-        <tr>
-            <td>ID</td>
-            <td>NOMBRE</td>
-            <td>DESCRIPCIÓN</td>
-            <td>ACCIÓN</td>
-        </tr>
-        <tr v-for="cat in categorias">
-            <td>{{ cat.id }}</td>
-            <td>{{ cat.nombre }}</td>
-            <td>{{ cat.descripcion }}</td>
-            <td>
-                <button>mostrar</button>
-                <button @click="funEditarCategoria(cat)">editar</button>
-                <button>eliminar</button>
-            </td>
-        </tr>
+    <table>
+        <thead>
+            <tr>
+                <td>ID</td>
+                <td>NOMBRE</td>
+                <td>DESCRIPCIÓN</td>
+                <td>ACCIÓN</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="cat in categorias" :key="cat.id">
+                <td>{{ cat.id }}</td>
+                <td>{{ cat.nombre }}</td>
+                <td>{{ cat.descripcion }}</td>
+                <td>
+                    <button>mostrar</button>
+                    <button @click="funEditarCategoria(cat)">editar</button>
+                    <button>eliminar</button>
+                </td>
+            </tr>
+
+        </tbody>
 
     </table>
     <pre>{{ categorias }}</pre>

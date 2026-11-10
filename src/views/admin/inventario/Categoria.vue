@@ -13,7 +13,7 @@
     </form>
 
     <v-card title="Gestión Categorias">
-        <v-data-table :items="categorias" density="compact" :hide-default-footer="categorias.length < 3" v-model:sort-by="sortBy">
+        <v-data-table :headers="headers" :items="categorias" density="compact" :hide-default-footer="categorias.length < 3" v-model:sort-by="sortBy">
 
             <template v-slot:top>
                 <v-toolbar flat>
@@ -107,6 +107,12 @@ const categoria = ref<Categoria>({ nombre: "" })
 
 const dialog = ref<boolean>(false)
 const sortBy = ref<any>([{ key: 'id', order: 'asc' }])
+
+const headers = [
+    {title: "ID", key:"id"},
+    {title: "NOMBRE", key:"nombre"},
+    {title: "DETALLE", key:"descripcion"}
+]
 
 onMounted(() => {
     listarCategorias()

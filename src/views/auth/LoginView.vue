@@ -1,9 +1,32 @@
 <template>
+    <v-container class="login-container fill-height d-flex align-center justify-center "
+      fluid>
+
+      <v-card width="450" max-width="95%" elevation="12" rounded="xl" class="pa-6">
+        <div class="text-center mb-6">
+            <v-avatar color="primary" size="75" class="mb-4">
+                <v-icon icon="mdi-account-circle" size="45" color="white"></v-icon>
+            </v-avatar>
+
+            <h2>Ingresar</h2>
+            <h2 class="text-h4 font-weight-bold text-primary">Bienvenido</h2>
+
+        </div>
+        <v-divider></v-divider>
+
+            <v-form @submit.prevent="login">
+                <v-text-field v-model="credenciales.email" label="Correo Electronico" type="email" prepend-inner-icon="mdi-email-outline" variant="outlined" color="primary" class="mb-2"></v-text-field>
+                <v-text-field v-model="credenciales.password" label="Contraseña" type="password" prepend-inner-icon="mdi-lock-outline" variant="outlined" color="primary" class="mb-2"></v-text-field>
+                <v-btn type="submit" color="primary" block size="large" rounded="lg" elevation="3" class="mt-4">
+                    Iniciar Sesion
+                </v-btn>
+            </v-form>
+
+      </v-card>
+
+    </v-container>
     <div>
         {{ credenciales }}
-        <h1>Ingresar</h1>
-        <label for="">Ingrese su Correo:</label>
-        <input type="email" v-model="credenciales.email">
         {{ errors.email }}
         <br>
         <label for="">Ingrese su Contraseña</label>
@@ -48,3 +71,9 @@ async function login(){
 }
 
 </script>
+
+<style>
+.login-container{
+    min-height: 100vh;
+}
+</style>

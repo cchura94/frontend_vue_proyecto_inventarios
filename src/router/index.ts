@@ -15,10 +15,11 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      redirect: '/inicio',
       component: WebLayout,
       children: [
         {
-          path: '/',
+          path: '/inicio',
           name: 'home',
           component: Inicio,
         },

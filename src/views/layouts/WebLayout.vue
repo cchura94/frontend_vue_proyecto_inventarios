@@ -1,11 +1,36 @@
 <template>
+  <v-app>
+      <v-app-bar color="primary" elevation="4" height="70">
+        <v-container class="d-flex align-center">
+          <v-toolbar-title class="font-weight-bold">
+            Mi Aplicación
+          </v-toolbar-title>
+
+          <v-spacer></v-spacer>
+
+          <v-btn to="/inicio" variant="text" color="white">
+            INICIO
+          </v-btn>
+          <v-btn to="/about" variant="text" color="white">
+            ACERCA DE NOSOTROS
+          </v-btn>
+
+          <v-btn to="/auth/login" variant="text" color="white">
+            INGRESAR
+          </v-btn>
+          
+        </v-container>
+      </v-app-bar>
+
+      <v-main>
+        <v-container>
+          <RouterView />
+
+        </v-container>
+      </v-main>
+
+  </v-app>
     
-     <nav>
-        <RouterLink to="/">INICIO</RouterLink> |
-        <RouterLink to="/about">ACERCA DE NOSOTROS</RouterLink> |
-        <RouterLink to="/auth/login">Ingresar</RouterLink>
-      </nav>
-    <RouterView />
 </template>
 
 <script setup lang="ts">

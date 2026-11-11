@@ -20,9 +20,11 @@
       <v-list density="compact" nav>
         <v-list-item prepend-icon="mdi-account" to="/admin/perfil" link title="Mi Perfil" :class="{ 'pl-5': false }"></v-list-item>
         <v-list-item prepend-icon="mdi-account-group-outline" to="/admin/usuario" link title="Mis Usuarios" :class="{ 'pl-5': true }"></v-list-item>
+        <v-divider></v-divider>
         <v-list-item prepend-icon="mdi-circle" to="/admin/categoria" link title="Categorias" :class="{ 'pl-5': false }"></v-list-item>
         <v-list-item prepend-icon="mdi-store-marker" to="/admin/sucursal" link title="Sucursales"></v-list-item>
         <v-list-item prepend-icon="mdi-warehouse" to="/admin/almacen" link title="Almacenes"></v-list-item>
+        <v-list-item prepend-icon="mdi-package" to="/admin/producto" link title="Productos"></v-list-item>
 
       </v-list>
 

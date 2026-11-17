@@ -19,7 +19,7 @@
             </v-toolbar>
 
             <v-card-subtitle class="pb-2">
-                {{ almacenes.length }} almacenes registrados
+                {{ almacenes?.length }} almacenes registrados
             </v-card-subtitle>
 
             <v-divider />
@@ -112,7 +112,7 @@
 
                 <v-card-text>
                     <v-form ref="formRef" @submit.prevent="guardar">
-                        <v-row dense>
+                        <v-row>
                             <v-col cols="12" sm="7">
                                 <v-text-field
                                     v-model="form.nombre"
@@ -325,8 +325,9 @@ async function listarAlmacenes() {
     cargando.value = true;
     try {
         const { data } = await funListar();
-        almacenes.value = data.data;
+        almacenes.value = Array.isArray(data) ? data : (data?.data ?? []);
     } catch (error) {
+        almacenes.value = [];
         notificar(extraerErrores(error), 'error');
     } finally {
         cargando.value = false;
@@ -336,8 +337,9 @@ async function listarAlmacenes() {
 async function listarSucursales() {
     try {
         const { data } = await funListarSucursales();
-        sucursales.value = data;
+        sucursales.value = Array.isArray(data) ? data : (data?.data ?? []);
     } catch (error) {
+        sucursales.value = [];
         notificar(extraerErrores(error), 'error');
     }
 }

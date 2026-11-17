@@ -305,8 +305,9 @@ async function listarSucursales() {
     cargando.value = true;
     try {
         const { data } = await funListar();
-        sucursales.value = data;
+        sucursales.value = Array.isArray(data) ? data : (data?.data ?? []);
     } catch (error) {
+        sucursales.value = [];
         notificar(extraerErrores(error), 'error');
     } finally {
         cargando.value = false;

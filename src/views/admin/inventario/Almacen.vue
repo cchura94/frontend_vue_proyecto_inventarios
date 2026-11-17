@@ -325,7 +325,7 @@ async function listarAlmacenes() {
     cargando.value = true;
     try {
         const { data } = await funListar();
-        almacenes.value = data;
+        almacenes.value = data.data;
     } catch (error) {
         notificar(extraerErrores(error), 'error');
     } finally {

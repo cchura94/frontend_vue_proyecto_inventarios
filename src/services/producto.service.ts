@@ -20,3 +20,7 @@ export async function funModificar(id: number, prod: Producto) {
 export async function funEliminar(id: number) {
     return await api.delete(`/producto/${id}`);
 }
+
+export async function funSubirImagen(id: number, formdata: any){
+    return await api.post(`/producto/${id}/subir-imagen`, formdata);
+}

@@ -26,7 +26,7 @@
 
             <v-divider></v-divider>
 
-            <v-data-table :headers="headers" :items="usuarios.data || []" class="elevation-0" item-value="id">
+            <v-data-table :headers="headers" :items="usuarios || []" class="elevation-0" item-value="id">
 
                 <template v-slot:item.actions="{item}">
                     <v-btn icon="mdi-pencil" color="primary" size="small" variant="text" />
@@ -66,7 +66,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="user in usuarios.data" key="user.id">
+            <tr v-for="user in usuarios" key="user.id">
                 <td>{{ user.id }}</td>
                 <td>{{ user.name }}</td>
                 <td>{{ user.email }}</td>

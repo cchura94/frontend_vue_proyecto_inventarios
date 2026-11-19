@@ -1,16 +1,5 @@
 <template>
-    <h1>Lista de Categorias</h1>
-    <form @submit.prevent="funGuardarCategoria()">
-
-        <label for="">Ingrese Nombre</label>
-        <input type="text" v-model="categoria.nombre">
-        <br>
-        <label for="">Ingrese Descripción</label>
-        <textarea v-model="categoria.descripcion"></textarea>
-        <br>
-
-        <input type="submit" value="guardar Categoria">
-    </form>
+    
 
     <v-card title="Gestión Categorias">
         <v-data-table :headers="headers" :items="categorias" density="compact" :hide-default-footer="categorias.length < 3" v-model:sort-by="sortBy">
@@ -42,34 +31,7 @@
 
     </v-card>
 
-    <table>
-        <thead>
-            <tr>
-                <td>ID</td>
-                <td>NOMBRE</td>
-                <td>DESCRIPCIÓN</td>
-                <td>ACCIÓN</td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="cat in categorias" :key="cat.id">
-                <td>{{ cat.id }}</td>
-                <td>{{ cat.nombre }}</td>
-                <td>{{ cat.descripcion }}</td>
-                <td>
-                    <button>mostrar</button>
-                    <button @click="funEditarCategoria(cat)">editar</button>
-                    <button>eliminar</button>
-                </td>
-            </tr>
-
-        </tbody>
-
-    </table>
-    <pre>{{ categorias }}</pre>
-
-
-    <v-dialog v-model="dialog" max-width="500">
+        <v-dialog v-model="dialog" max-width="500">
         <v-card :subtitle="`${categoria.id ? 'Modificar' : 'Crear'} tu categoria `"
             :title="`${categoria.id ? 'Editar' : 'Agregar'} una Categoria`">
             <template v-slot:text>
@@ -96,6 +58,48 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+<!--
+    <h1>Lista de Categorias</h1>
+    <form @submit.prevent="funGuardarCategoria()">
+
+        <label for="">Ingrese Nombre</label>
+        <input type="text" v-model="categoria.nombre">
+        <br>
+        <label for="">Ingrese Descripción</label>
+        <textarea v-model="categoria.descripcion"></textarea>
+        <br>
+
+        <input type="submit" value="guardar Categoria">
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <td>ID</td>
+                <td>NOMBRE</td>
+                <td>DESCRIPCIÓN</td>
+                <td>ACCIÓN</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="cat in categorias" :key="cat.id">
+                <td>{{ cat.id }}</td>
+                <td>{{ cat.nombre }}</td>
+                <td>{{ cat.descripcion }}</td>
+                <td>
+                    <button>mostrar</button>
+                    <button @click="funEditarCategoria(cat)">editar</button>
+                    <button>eliminar</button>
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+    <pre>{{ categorias }}</pre>
+
+-->
+
 </template>
 <script lang="ts" setup>
 import { funGuardar, funListar, funModificar } from "@/services/categoria.service"

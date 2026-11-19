@@ -22,8 +22,8 @@
 
             <v-card-text>
                 <v-text-field v-model="buscar" class="mb-4" clearable density="comfortable" hide-details
-                    label="Buscar por nombre, ciudad, dirección o teléfono" prepend-inner-icon="mdi-magnify"
-                    variant="outlined" />
+                    label="Buscar por nombre" prepend-inner-icon="mdi-magnify"
+                    variant="outlined" @keyup.enter="listarProductos" />
                 <v-data-table-server v-model:items-per-page="itemsPerPage" :headers="headers" :items="productos" v-model:page="page"
                     :items-length="productos.length" :loading="cargando" item-value="name" @update:options="listarProductos" hover>
 
@@ -105,6 +105,9 @@
                                     variant="outlined"
                                 />
                             </v-col>
+                            <v-file-input label="Seleccionar Imagen" v-model="img_file"></v-file-input>
+
+
                         </v-row>
                     </v-form>
                 </v-card-text>
@@ -140,17 +143,27 @@
         max-width="400"
         prepend-icon="mdi-update"
       >
+      <v-card-title>
+        Actualizar Imagen
+      </v-card-title>
 
-        <input type="file" color="primary" icon="mdi-image" size="small" variant="text"
-                                @change="seleccionarImagen" />
-        <template v-slot:actions>
-          <v-btn
-            class="ms-auto"
-            text="Ok"
-            @click="dialogImagen = false"
-          ></v-btn>
-        </template>
-      </v-card>
+      <v-card-subtitle>
+        Selecciona la imagen y luego Guardar
+      </v-card-subtitle>
+        <v-card-text>
+              <v-file-input label="Seleccionar Imagen" v-model="img_file"></v-file-input>
+    <!--
+            <input type="file" color="primary" icon="mdi-image" size="small" variant="text"
+                                    @change="seleccionarImagen" />
+        -->
+                                    
+                                    <v-btn
+                                      class="ms-auto"
+                                      text="Actualizar Imagen de Producto"
+                                      @click="seleccionarImagen"
+                                    ></v-btn>
+                                </v-card-text>
+                            </v-card>
     </v-dialog>
     </v-container>
     
@@ -182,6 +195,7 @@ const dialogImagen = ref(false)
 const guardando = ref(false);
 const snackbar = ref({ visible: false, texto: '', color: 'success' });
 const prod_id = ref<any>(-1);
+const img_file = ref<any>();
 
 const page = ref(1)
 const formRef = ref<any>(null);
@@ -199,7 +213,7 @@ function cerrarDialogo() {
 
 function funAbrirActualizarImagen(prod: any){
     prod_id.value = prod;
-    dialogImagen.value = true
+    dialogImagen.value = true;
 }
 
 function funActualizarImagen(event: any){
@@ -216,7 +230,7 @@ onMounted(() => {
 
 async function listarProductos() {
     cargando.value = true;
-    const { data } = await funListar(page.value, itemsPerPage.value);
+    const { data } = await funListar(page.value, itemsPerPage.value, buscar.value, '');
     productos.value = data.data
     cargando.value = false;
 }
@@ -268,14 +282,23 @@ async function guardar() {
             estado: true
         };
 
+        let payload2: any = new FormData();
+        payload2.append("nombre", form.value.nombre.trim())
+         payload2.append("precio_venta_actual", form.value.precio_venta_actual.trim())
+         payload2.append("descripcion", form.value.descripcion?.trim() || "")
+         payload2.append("categoria_id", form.value.categoria_id)
+         payload2.append("estado", true);
+         payload2.append("imagen", img_file.value);
+
         if (form.value.id) {
-            await funModificar(form.value.id, payload);
+            await funModificar(form.value.id, payload2);
             notificar('Almacén actualizado correctamente.');
         } else {
-            await funGuardar(payload);
+            await funGuardar(payload2);
             notificar('Almacén registrado correctamente.');
         }
 
+        dialogImagen.value = false;
         
         dialog.value = false;
         form.value = vacio();
@@ -303,11 +326,16 @@ function extraerErrores(error: any) {
 }
 
 async function seleccionarImagen(event: any){
-    console.log(event.target.files[0]);
-    console.log(prod_id.value);
-    const formdata = new FormData()
-    formdata.append("imagen", event.target.files[0])
-    await funSubirImagen(prod_id.value.id, formdata)
-
+  
+    if(img_file.value){
+        
+        const formdata = new FormData()
+        formdata.append("imagen", img_file.value)
+        await funSubirImagen(prod_id.value.id, formdata)
+    
+        listarProductos()
+        dialogImagen.value = false;
+        img_file.value = null
+    }
 }
 </script>

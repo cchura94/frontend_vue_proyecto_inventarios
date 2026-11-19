@@ -41,7 +41,7 @@
         </v-card>
 
     </v-container>
-
+<!--
     <div>
         <label for="">Ingrese su Correo</label>
         <input type="email" v-model="usuario.email">
@@ -79,6 +79,7 @@
         </tbody>
     </table>
     <pre>{{ usuarios }}</pre>
+    -->
 </template>
 
 <script lang="ts" setup>

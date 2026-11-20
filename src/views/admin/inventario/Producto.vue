@@ -15,20 +15,66 @@
             </v-toolbar>
 
             <v-card-subtitle class="pb-2">
-                {{ productos.length }} productos registradas
+                {{ totalProductos }} productos registrados
             </v-card-subtitle>
 
             <v-divider />
 
             <v-card-text>
-                <v-text-field v-model="buscar" class="mb-4" clearable density="comfortable" hide-details
-                    label="Buscar por nombre" prepend-inner-icon="mdi-magnify"
-                    variant="outlined" @keyup.enter="listarProductos" />
+                <v-row dense class="mb-2">
+                    <v-col cols="12" md="4">
+                        <v-select v-model="sucursal_id" :items="sucursales" clearable density="comfortable" hide-details
+                            item-title="nombre" item-value="id" label="Sucursal"
+                            prepend-inner-icon="mdi-store-marker" variant="outlined"
+                            @update:model-value="onSucursalChange" />
+                    </v-col>
+
+                    <v-col cols="12" md="4">
+                        <v-select v-model="almacen_id" :items="almacenes" clearable density="comfortable" hide-details
+                            item-title="nombre" item-value="id" label="Almacén"
+                            prepend-inner-icon="mdi-warehouse" variant="outlined"
+                            @update:model-value="onAlmacenChange" />
+                    </v-col>
+
+                    <v-col cols="12" md="4">
+                        <v-text-field v-model="buscar" clearable density="comfortable" hide-details
+                            label="Buscar por nombre" prepend-inner-icon="mdi-magnify" variant="outlined"
+                            @update:model-value="onBuscarChange" />
+                    </v-col>
+                </v-row>
+
                 <v-data-table-server v-model:items-per-page="itemsPerPage" :headers="headers" :items="productos" v-model:page="page"
-                    :items-length="productos.length" :loading="cargando" item-value="name" @update:options="listarProductos" hover>
+                    :items-length="totalProductos" :loading="cargando" item-value="id" @update:options="listarProductos" hover>
 
                     <template v-slot:item.imagen="{ item }">
                         <img :src="`http://localhost:8000/${item.imagen}`" alt="" width="50px">
+                    </template>
+
+                    <template v-slot:item.stock="{ item }">
+                        <div v-if="item.almacenes?.length" class="py-1">
+                            <div v-for="alm in item.almacenes" :key="alm.id"
+                                class="d-flex align-center justify-space-between ga-3 py-1"
+                                :class="{ 'text-primary font-weight-bold': esSeleccionado(alm) }">
+                                <div class="text-caption">
+                                    <v-icon icon="mdi-store-marker" size="14" />
+                                    {{ alm.sucursal?.nombre || 'Sin sucursal' }}
+                                    <span class="text-medium-emphasis">· {{ alm.nombre }}</span>
+                                </div>
+
+                                <v-chip :color="colorStock(item, alm)" size="x-small" variant="tonal">
+                                    {{ alm.pivot?.cantidad_actual ?? 0 }}
+                                </v-chip>
+                            </div>
+
+                            <v-divider class="my-1" />
+
+                            <div class="d-flex align-center justify-space-between text-caption font-weight-bold">
+                                <span>Total</span>
+                                <span>{{ totalStock(item) }}</span>
+                            </div>
+                        </div>
+
+                        <span v-else class="text-caption text-medium-emphasis">Sin stock registrado</span>
                     </template>
 
                     <template v-slot:item.actions="{ item }">
@@ -165,25 +211,35 @@
                                 </v-card-text>
                             </v-card>
     </v-dialog>
+
+        <v-snackbar v-model="snackbar.visible" :color="snackbar.color" location="top right" timeout="3500">
+            {{ snackbar.texto }}
+        </v-snackbar>
     </v-container>
     
 </template>
 
 <script lang="ts" setup>
-import type { Producto } from '@/services/interfaces/Producto';
+import type { Producto, StockAlmacen } from '@/services/interfaces/Producto';
+import type { Sucursal } from '@/services/interfaces/Sucursal';
+import type { Almacen } from '@/services/interfaces/Almacen';
 import { onMounted, ref } from 'vue';
 import { funGuardar, funListar, funModificar, funSubirImagen } from '@/services/producto.service'
 import * as catService from '@/services/categoria.service'
+import * as almService from '@/services/almacen.service'
+import * as sucService from '@/services/sucursal.service'
 
 const itemsPerPage = ref(10)
 
 const productos = ref<Producto[]>([]);
+const totalProductos = ref(0);
 const headers = [
     { title: 'ID', key: 'id', width: 70 },
     { title: 'NOMBRE', key: 'nombre' },
     { title: 'PRECIO VENTA', key: 'precio_venta_actual' },
     { title: 'IMAGEN', key: 'imagen' },
     { title: 'CATEGORIA', key: 'categoria.nombre' },
+    { title: 'STOCK POR ALMACÉN', key: 'stock', width: 340, sortable: false },
     { title: 'REGISTRADO', key: 'created_at' },
     { title: 'ACCIONES', key: 'actions', align: 'end' as const, sortable: false },
 ];
@@ -199,6 +255,12 @@ const img_file = ref<any>();
 
 const page = ref(1)
 const formRef = ref<any>(null);
+
+const sucursal_id = ref<number | null>(null);
+const almacen_id = ref<number | null>(null);
+const sucursales = ref<Sucursal[]>([]);
+const almacenes = ref<Almacen[]>([]);
+let buscarTimer: ReturnType<typeof setTimeout> | undefined;
 
     function obligatorio(valor: unknown) {
     return (valor !== null && valor !== undefined && String(valor).trim() !== '')
@@ -226,20 +288,103 @@ const categorias = ref<any>([]);
 onMounted(() => {
     listarProductos()
     listarCategorias()
+    listarSucursales()
+    listarAlmacenes()
 })
 
 async function listarProductos() {
     cargando.value = true;
-    const { data } = await funListar(page.value, itemsPerPage.value, buscar.value, '');
-    productos.value = data.data
-    cargando.value = false;
+    try {
+        const { data } = await funListar(
+            page.value,
+            itemsPerPage.value,
+            buscar.value,
+            almacen_id.value,
+            sucursal_id.value,
+        );
+        productos.value = data?.data ?? [];
+        totalProductos.value = data?.total ?? productos.value.length;
+    } catch (error) {
+        productos.value = [];
+        totalProductos.value = 0;
+        notificar(extraerErrores(error), 'error');
+    } finally {
+        cargando.value = false;
+    }
 }
 
 async function listarCategorias() {
-    cargando.value = true;
-    const { data } = await catService.funListar();
-    categorias.value = data
-    cargando.value = false;
+    try {
+        const { data } = await catService.funListar();
+        categorias.value = data;
+    } catch (error) {
+        notificar(extraerErrores(error), 'error');
+    }
+}
+
+async function listarSucursales() {
+    try {
+        const { data } = await sucService.funListar();
+        sucursales.value = Array.isArray(data) ? data : (data?.data ?? []);
+    } catch (error) {
+        sucursales.value = [];
+        notificar(extraerErrores(error), 'error');
+    }
+}
+
+async function listarAlmacenes() {
+    try {
+        const { data } = await almService.funListar(sucursal_id.value);
+        almacenes.value = Array.isArray(data) ? data : (data?.data ?? []);
+    } catch (error) {
+        almacenes.value = [];
+        notificar(extraerErrores(error), 'error');
+    }
+}
+
+async function onSucursalChange() {
+    almacen_id.value = null;
+    page.value = 1;
+    await listarAlmacenes();
+    await listarProductos();
+}
+
+function onAlmacenChange() {
+    page.value = 1;
+    listarProductos();
+}
+
+function onBuscarChange(valor: string | null) {
+    buscar.value = valor ?? '';
+    clearTimeout(buscarTimer);
+    buscarTimer = setTimeout(() => {
+        page.value = 1;
+        listarProductos();
+    }, 400);
+}
+
+function esSeleccionado(almacen: StockAlmacen) {
+    if (almacen_id.value) return almacen_id.value === almacen.id;
+    if (sucursal_id.value) return sucursal_id.value === almacen.sucursal?.id;
+
+    return false;
+}
+
+function stockAlmacen(almacen: StockAlmacen) {
+    return Number(almacen.pivot?.cantidad_actual ?? 0);
+}
+
+function totalStock(prod: Producto) {
+    return (prod.almacenes ?? []).reduce((total, almacen) => total + stockAlmacen(almacen), 0);
+}
+
+function colorStock(prod: Producto, almacen: StockAlmacen) {
+    const cantidad = stockAlmacen(almacen);
+
+    if (cantidad <= 0) return 'error';
+    if (cantidad <= Number(prod.stock_minimo ?? 0)) return 'warning';
+
+    return 'success';
 }
 
 const vacio = (): Producto => ({

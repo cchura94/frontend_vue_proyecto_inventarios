@@ -25,6 +25,16 @@
             <v-divider />
 
             <v-card-text>
+                <v-select
+                    v-model="sucursal_id"
+                    item-title="nombre"
+                    item-value="id"
+                    :items="sucursales"
+                    label="Sucursal"
+                    prepend-inner-icon="mdi-store-marker"
+                    variant="outlined"
+                    @update:model-value="listarAlmacenes()"
+                />
                 <v-text-field
                     v-model="buscar"
                     class="mb-4"
@@ -35,6 +45,7 @@
                     prepend-inner-icon="mdi-magnify"
                     variant="outlined"
                 />
+
 
                 <v-data-table
                     :headers="headers"
@@ -264,6 +275,7 @@ const buscar = ref('');
 const cargando = ref(false);
 const guardando = ref(false);
 const eliminando = ref(false);
+const sucursal_id = ref<number>(0)
 
 const dialog = ref(false);
 const dialogEliminar = ref(false);
@@ -324,7 +336,7 @@ function extraerErrores(error: any) {
 async function listarAlmacenes() {
     cargando.value = true;
     try {
-        const { data } = await funListar();
+        const { data } = await funListar(sucursal_id.value);
         almacenes.value = Array.isArray(data) ? data : (data?.data ?? []);
     } catch (error) {
         almacenes.value = [];

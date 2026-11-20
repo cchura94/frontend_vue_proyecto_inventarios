@@ -10,6 +10,8 @@ import Categoria from '@/views/admin/inventario/Categoria.vue'
 import Sucursal from '@/views/admin/inventario/Sucursal.vue'
 import Almacen from '@/views/admin/inventario/Almacen.vue'
 import Producto from '@/views/admin/inventario/Producto.vue'
+import Compra from '@/views/admin/Notas/Compra.vue'
+import ListadoCompra from '@/views/admin/Notas/ListadoCompra.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -80,6 +82,18 @@ const router = createRouter({
           path: 'producto',
           meta: {requireAuth: true},
           component: Producto,
+        },
+        {
+          path: 'compra',
+          meta: {requireAuth: true},
+          name: 'Compra',
+          component: Compra,
+        },
+        {
+          path: 'compras',
+          meta: {requireAuth: true},
+          name: 'ListadoCompra',
+          component: ListadoCompra,
         }
 
 

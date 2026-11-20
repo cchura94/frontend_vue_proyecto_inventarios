@@ -25,6 +25,8 @@
         <v-list-item prepend-icon="mdi-store-marker" to="/admin/sucursal" link title="Sucursales"></v-list-item>
         <v-list-item prepend-icon="mdi-warehouse" to="/admin/almacen" link title="Almacenes"></v-list-item>
         <v-list-item prepend-icon="mdi-package" to="/admin/producto" link title="Productos"></v-list-item>
+        <v-list-item prepend-icon="mdi-cart-plus" to="/admin/compra" link title="Registrar Compra"></v-list-item>
+        <v-list-item prepend-icon="mdi-format-list-bulleted" to="/admin/compras" link title="Listado Compras"></v-list-item>
 
       </v-list>
 

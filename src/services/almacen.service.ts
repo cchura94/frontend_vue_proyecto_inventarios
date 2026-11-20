@@ -1,8 +1,13 @@
 import api from "./api";
 import type { Almacen } from "./interfaces/Almacen";
 
-export async function funListar() {
-    return await api.get("/almacen");
+export async function funListar(sucursal_id?: number | null, limit: number = 100) {
+    return await api.get("/almacen", {
+        params: {
+            sucursal_id: sucursal_id || undefined,
+            limit,
+        },
+    });
 }
 
 export async function funGuardar(almacen: Almacen) {

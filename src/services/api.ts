@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-export const BASE_URL= "http://localhost:8000";
-// export const BASE_URL= "https://backinventarios.blumbit.net";
+// export const BASE_URL= "http://localhost:8000";
+export const BASE_URL= "https://apiback.blumbit.net";
 // admin@mail.com
 // admin54321
 

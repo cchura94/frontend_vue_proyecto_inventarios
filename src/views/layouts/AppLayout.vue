@@ -27,6 +27,8 @@
         <v-list-item prepend-icon="mdi-package" to="/admin/producto" link title="Productos"></v-list-item>
         <v-list-item prepend-icon="mdi-cart-plus" to="/admin/compra" link title="Registrar Compra"></v-list-item>
         <v-list-item prepend-icon="mdi-format-list-bulleted" to="/admin/compras" link title="Listado Compras"></v-list-item>
+        <v-list-item prepend-icon="mdi-cash-register" to="/admin/venta" link title="Registrar Venta"></v-list-item>
+        <v-list-item prepend-icon="mdi-format-list-bulleted" to="/admin/ventas" link title="Listado Ventas"></v-list-item>
 
       </v-list>
 

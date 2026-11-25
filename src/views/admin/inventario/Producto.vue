@@ -9,7 +9,7 @@
                     Gestión de Productos
                 </v-toolbar-title>
 
-                <v-btn color="primary" prepend-icon="mdi-plus" rounded="lg" @click="abrirCrear">
+                <v-btn v-if="$can('crear', 'Producto')" color="primary" prepend-icon="mdi-plus" rounded="lg" @click="abrirCrear">
                     Nuevo Producto
                 </v-btn>
             </v-toolbar>
@@ -80,13 +80,13 @@
                     <template v-slot:item.actions="{ item }">
                         <div class="d-flex ga-2 justify-end">
                             
-                            <v-btn @click="funAbrirActualizarImagen(item)">
+                            <v-btn v-if="$can('editar', 'Producto')" @click="funAbrirActualizarImagen(item)">
                                 Actualizar Imagen
                             </v-btn>
 
-                            <v-btn color="primary" icon="mdi-pencil" size="small" variant="text"
+                            <v-btn v-if="$can('editar', 'Producto')" color="primary" icon="mdi-pencil" size="small" variant="text"
                                 @click="abrirEditar(item)" />
-                            <v-btn color="error" icon="mdi-delete" size="small" variant="text"
+                            <v-btn v-if="$can('eliminar', 'Producto')" color="error" icon="mdi-delete" size="small" variant="text"
                                 @click="abrirEliminar(item)" />
                         </div>
                     </template>
@@ -168,6 +168,7 @@
                     <v-spacer />
 
                     <v-btn
+                        v-if="$can(form.id ? 'editar' : 'crear', 'Producto')"
                         color="primary"
                         :loading="guardando"
                         prepend-icon="mdi-content-save"

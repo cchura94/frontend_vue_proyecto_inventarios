@@ -1,79 +1,106 @@
 <template>
-    <v-container class="login-container fill-height d-flex align-center justify-center "
-      fluid>
+    <v-container class="login-container fill-height d-flex align-center justify-center" fluid>
+        <v-card width="450" max-width="95%" elevation="12" rounded="xl" class="pa-6">
+            <div class="text-center mb-6">
+                <v-avatar color="primary" size="75" class="mb-4">
+                    <v-icon icon="mdi-account-circle" size="45" color="white" />
+                </v-avatar>
 
-      <v-card width="450" max-width="95%" elevation="12" rounded="xl" class="pa-6">
-        <div class="text-center mb-6">
-            <v-avatar color="primary" size="75" class="mb-4">
-                <v-icon icon="mdi-account-circle" size="45" color="white"></v-icon>
-            </v-avatar>
+                <h2>Ingresar</h2>
+                <h2 class="text-h4 font-weight-bold text-primary">Bienvenido</h2>
+            </div>
 
-            <h2>Ingresar</h2>
-            <h2 class="text-h4 font-weight-bold text-primary">Bienvenido</h2>
+            <v-divider />
 
-        </div>
-        <v-divider></v-divider>
+            <v-alert
+                v-if="mensajeError"
+                class="mt-4"
+                closable
+                type="error"
+                variant="tonal"
+                @click:close="mensajeError = ''"
+            >
+                {{ mensajeError }}
+            </v-alert>
 
             <v-form @submit.prevent="login">
-                <v-text-field v-model="credenciales.email" label="Correo Electronico" type="email" prepend-inner-icon="mdi-email-outline" variant="outlined" color="primary" class="mb-2"></v-text-field>
-                <v-text-field v-model="credenciales.password" label="Contraseña" type="password" prepend-inner-icon="mdi-lock-outline" variant="outlined" color="primary" class="mb-2"></v-text-field>
-                <v-btn type="submit" color="primary" block size="large" rounded="lg" elevation="3" class="mt-4">
-                    Iniciar Sesion
+                <v-text-field
+                    v-model="credenciales.email"
+                    class="mb-2"
+                    color="primary"
+                    :error-messages="errors.email"
+                    label="Correo Electrónico"
+                    prepend-inner-icon="mdi-email-outline"
+                    type="email"
+                    variant="outlined"
+                />
+
+                <v-text-field
+                    v-model="credenciales.password"
+                    class="mb-2"
+                    color="primary"
+                    :error-messages="errors.password"
+                    label="Contraseña"
+                    prepend-inner-icon="mdi-lock-outline"
+                    type="password"
+                    variant="outlined"
+                />
+
+                <v-btn
+                    block
+                    class="mt-4"
+                    color="primary"
+                    elevation="3"
+                    :loading="cargando"
+                    rounded="lg"
+                    size="large"
+                    type="submit"
+                >
+                    Iniciar Sesión
                 </v-btn>
             </v-form>
-
-      </v-card>
-
+        </v-card>
     </v-container>
-    <div>
-        {{ credenciales }}
-        {{ errors.email }}
-        <br>
-        <label for="">Ingrese su Contraseña</label>
-        <input type="password" v-model="credenciales.password">
-        {{ errors.password }}
-        <br>
-        <button @click="login()">Iniciar Sesion</button>
-
-    </div>
 </template>
 
 <script lang="ts" setup>
-import { loginConlaravel } from "@/services/auth.service"
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 
-const credenciales = ref({email: "", password: ""});
-const errors = ref<any>({});
+const credenciales = ref({ email: '', password: '' });
+const errors = ref<Record<string, string[]>>({});
+const mensajeError = ref('');
+const cargando = ref(false);
 
 const router = useRouter();
+const auth = useAuthStore();
 
-async function login(){
-    try{
-        const {data} = await loginConlaravel(credenciales.value.email, credenciales.value.password);
-        console.log(data);
-        // alert("Bienvenido...")
-        localStorage.setItem("access_token", data.access_token)
-        router.push("/admin/usuario");
+async function login() {
+    errors.value = {};
+    mensajeError.value = '';
+    cargando.value = true;
 
+    try {
+        await auth.iniciarSesion(credenciales.value.email, credenciales.value.password);
+        await router.push({ name: 'Perfil' });
+    } catch (error: any) {
+        const data = error?.response?.data;
 
-    }catch(error: any){
-        console.log("*******: ", error.response);
-        if(error.response.status === 422){
-            console.log(error.response.data)
-            errors.value = error.response.data.errors;
-            // alert(error.response.data.message)
-        }else{
-            alert(error.response.data.message)
+        if (error?.response?.status === 422 && data?.errors) {
+            errors.value = data.errors;
+            mensajeError.value = data.message || 'Revisa los datos ingresados.';
+        } else {
+            mensajeError.value = data?.mensaje || data?.message || 'No se pudo iniciar sesión.';
         }
+    } finally {
+        cargando.value = false;
     }
-
 }
-
 </script>
 
 <style>
-.login-container{
+.login-container {
     min-height: 100vh;
 }
 </style>

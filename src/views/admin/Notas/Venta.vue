@@ -208,7 +208,7 @@
                                                 prepend-inner-icon="mdi-account" variant="outlined"
                                                 @update:search="onBuscarCliente" />
 
-                                            <v-btn color="primary" icon="mdi-account-plus" size="large"
+                                            <v-btn v-if="$can('crear', 'Cliente')" color="primary" icon="mdi-account-plus" size="large"
                                                 title="Nuevo cliente" variant="tonal" @click="abrirCliente" />
                                         </div>
                                     </v-col>
@@ -220,7 +220,7 @@
                                     </v-col>
 
                                     <v-col cols="12">
-                                        <v-btn block color="primary" prepend-icon="mdi-content-save" size="large"
+                                        <v-btn v-if="$can('crear', 'Venta')" block color="primary" prepend-icon="mdi-content-save" size="large"
                                             :loading="guardando" @click="guardarVenta">
                                             Guardar Venta
                                         </v-btn>

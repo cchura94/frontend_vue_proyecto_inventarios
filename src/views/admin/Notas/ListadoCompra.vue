@@ -8,11 +8,11 @@
                     Listado de Compras
                 </v-toolbar-title>
 
-                <v-btn color="primary" prepend-icon="mdi-plus" rounded="lg" to="/admin/compra">
+                <v-btn v-if="$can('crear', 'Compra')" color="primary" prepend-icon="mdi-plus" rounded="lg" to="/admin/compra">
                     Nueva Compra
                 </v-btn>
 
-                <v-btn class="ms-2" color="primary" :loading="generandoReporte" prepend-icon="mdi-file-pdf-box"
+                <v-btn v-if="$can('ver', 'Compra')" class="ms-2" color="primary" :loading="generandoReporte" prepend-icon="mdi-file-pdf-box"
                     rounded="lg" variant="tonal" @click="descargarReporte">
                     Reporte PDF
                 </v-btn>

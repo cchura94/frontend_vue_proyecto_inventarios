@@ -12,17 +12,17 @@
                         Categorias
                     </v-toolbar-title>
 
-                    <v-btn class="me-2" prepend-icon="mdi-plus" rounded="lg" text="Nueva Categoria" border
+                    <v-btn v-if="$can('crear', 'Categoria')" class="me-2" prepend-icon="mdi-plus" rounded="lg" text="Nueva Categoria" border
                         @click="dialog = true"></v-btn>
                 </v-toolbar>
             </template>
 
             <template v-slot:item.actions="{ item }">
                 <div class="d-flex ga-2 justify-end">
-                    <v-icon color="medium-emphasis" icon="mdi-pencil" size="small"
+                    <v-icon v-if="$can('editar', 'Categoria')" color="medium-emphasis" icon="mdi-pencil" size="small"
                         @click="funEditarCategoria(item)"></v-icon>
 
-                    <v-icon color="medium-emphasis" icon="mdi-delete" size="small"
+                    <v-icon v-if="$can('eliminar', 'Categoria')" color="medium-emphasis" icon="mdi-delete" size="small"
                         @click="funEditarCategoria(item)"></v-icon>
                 </div>
             </template>

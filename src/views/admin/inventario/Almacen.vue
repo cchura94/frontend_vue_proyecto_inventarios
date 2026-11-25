@@ -9,6 +9,7 @@
                 </v-toolbar-title>
 
                 <v-btn
+                    v-if="$can('crear', 'Almacen')"
                     color="primary"
                     prepend-icon="mdi-plus"
                     rounded="lg"
@@ -75,6 +76,7 @@
                     <template v-slot:item.actions="{ item }">
                         <div class="d-flex ga-2 justify-end">
                             <v-btn
+                                v-if="$can('editar', 'Almacen')"
                                 color="primary"
                                 icon="mdi-pencil"
                                 size="small"
@@ -82,6 +84,7 @@
                                 @click="abrirEditar(item)"
                             />
                             <v-btn
+                                v-if="$can('eliminar', 'Almacen')"
                                 color="error"
                                 icon="mdi-delete"
                                 size="small"
@@ -187,6 +190,7 @@
                     <v-spacer />
 
                     <v-btn
+                        v-if="$can(form.id ? 'editar' : 'crear', 'Almacen')"
                         color="primary"
                         :loading="guardando"
                         prepend-icon="mdi-content-save"

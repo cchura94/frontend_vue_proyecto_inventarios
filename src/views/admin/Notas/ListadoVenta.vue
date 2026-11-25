@@ -8,11 +8,11 @@
                     Listado de Notas de Venta
                 </v-toolbar-title>
 
-                <v-btn color="primary" prepend-icon="mdi-plus" rounded="lg" to="/admin/venta">
+                <v-btn v-if="$can('crear', 'Venta')" color="primary" prepend-icon="mdi-plus" rounded="lg" to="/admin/venta">
                     Nueva Venta
                 </v-btn>
 
-                <v-btn class="ms-2" color="primary" :loading="generandoReporte" prepend-icon="mdi-file-pdf-box"
+                <v-btn v-if="$can('ver', 'Venta')" class="ms-2" color="primary" :loading="generandoReporte" prepend-icon="mdi-file-pdf-box"
                     rounded="lg" variant="tonal" @click="descargarReporte">
                     Reporte PDF
                 </v-btn>

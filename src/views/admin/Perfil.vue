@@ -46,6 +46,19 @@
           >
             Usuario activo
           </v-chip>
+
+          <div v-if="auth.roles.length" class="mt-4 d-flex flex-wrap justify-center ga-2">
+            <v-chip
+              v-for="rol in auth.roles"
+              :key="rol"
+              color="primary"
+              size="small"
+              variant="tonal"
+              prepend-icon="mdi-account-badge"
+            >
+              {{ rol }}
+            </v-chip>
+          </div>
         </v-card>
       </v-col>
 
@@ -82,6 +95,47 @@
           </v-card-text>
         </v-card>
       </v-col>
+
+      <!-- Permisos -->
+      <v-col cols="12">
+        <v-card rounded="lg" elevation="2">
+          <v-card-title class="d-flex align-center ga-2">
+            <v-icon icon="mdi-key-variant" color="primary" />
+            Permisos asignados
+            <v-chip size="small" variant="tonal" color="primary" class="ms-2">
+              {{ auth.permisos.length }}
+            </v-chip>
+          </v-card-title>
+
+          <v-divider />
+
+          <v-card-text>
+            <div v-if="auth.esAdministrador" class="text-body-2 text-medium-emphasis">
+              Tu rol <strong>administrador</strong> tiene acceso total al sistema.
+            </div>
+
+            <div
+              v-else-if="auth.permisos.length"
+              class="d-flex flex-wrap ga-2"
+            >
+              <v-chip
+                v-for="permiso in permisosOrdenados"
+                :key="permiso"
+                size="small"
+                variant="tonal"
+                color="primary"
+                prepend-icon="mdi-check-decagram"
+              >
+                {{ permiso }}
+              </v-chip>
+            </div>
+
+            <div v-else class="text-body-2 text-medium-emphasis">
+              No tienes permisos asignados.
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
     </v-row>
 
     <v-snackbar v-model="snackbar" color="error" timeout="4000">
@@ -93,15 +147,18 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { obtenerPerfil } from '@/services/auth.service';
+import { useAuthStore } from '@/stores/auth';
+import type { UsuarioAuth } from '@/services/interfaces/Auth';
 
 const router = useRouter();
+const auth = useAuthStore();
 
-const perfil = ref<any>({});
 const cargando = ref(true);
 const saliendo = ref(false);
 const snackbar = ref(false);
 const mensajeError = ref('');
+
+const perfil = computed<Partial<UsuarioAuth>>(() => auth.usuario ?? {});
 
 const inicial = computed(() => {
   const nombre = perfil.value?.name?.trim();
@@ -122,10 +179,13 @@ const fechaCreacion = computed(() => {
   });
 });
 
+const permisosOrdenados = computed(() => [...auth.permisos].sort());
+
 async function cargarPerfil() {
   try {
-    const { data } = await obtenerPerfil();
-    perfil.value = data;
+    if (!auth.cargado) {
+      await auth.cargarPerfil();
+    }
   } catch {
     mensajeError.value = 'No se pudo cargar la información del perfil.';
     snackbar.value = true;
@@ -136,9 +196,12 @@ async function cargarPerfil() {
 
 async function funSalir() {
   saliendo.value = true;
-  localStorage.removeItem('access_token');
-  await router.push({ name: 'Login' });
-  saliendo.value = false;
+  try {
+    await auth.cerrarSesion();
+  } finally {
+    saliendo.value = false;
+    await router.push({ name: 'Login' });
+  }
 }
 
 onMounted(cargarPerfil);

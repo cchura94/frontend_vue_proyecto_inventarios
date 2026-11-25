@@ -185,7 +185,7 @@
                                                 prepend-inner-icon="mdi-truck-delivery" variant="outlined"
                                                 @update:search="onBuscarProveedor" />
 
-                                            <v-btn color="primary" icon="mdi-plus" size="large" title="Nuevo proveedor"
+                                            <v-btn v-if="$can('crear', 'Proveedor')" color="primary" icon="mdi-plus" size="large" title="Nuevo proveedor"
                                                 variant="tonal" @click="abrirProveedor" />
                                         </div>
                                     </v-col>
@@ -197,7 +197,7 @@
                                     </v-col>
 
                                     <v-col cols="12">
-                                        <v-btn block color="primary" prepend-icon="mdi-content-save" size="large"
+                                        <v-btn v-if="$can('crear', 'Compra')" block color="primary" prepend-icon="mdi-content-save" size="large"
                                             :loading="guardando" @click="guardarCompra">
                                             Guardar Compra
                                         </v-btn>
